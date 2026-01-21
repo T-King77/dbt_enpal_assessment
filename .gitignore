@@ -1,0 +1,7 @@
+# dbt artifacts
+target/
+logs/
+.user.yml
+
+# Python venv
+venv/
