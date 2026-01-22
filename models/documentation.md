@@ -93,6 +93,22 @@ for dropdown fields. Enables enrichment of deal outcomes such as
 lost_reason labels in downstream models.
 {% enddocs %}
 
+{% docs int_deal_stage_reached %}
+Pivots deal stage transitions into wide format with one timestamp column per stage.
+Captures the earliest timestamp each deal reached each of the 9 pipeline stages.
+One row per deal with stage_1_reached_at through stage_9_reached_at columns.
+NULL indicates stage not reached. Enables efficient downstream aggregation for
+funnel analysis.
+{% enddocs %}
+
+{% docs int_deal_activity_summary %}
+Aggregates activity engagement patterns per deal across all activity types.
+Captures first completed timestamps for Sales Call 1 and Sales Call 2 milestones
+(funnel sub-steps 2.1 and 3.1). Includes activity volume metrics for future
+engagement analysis. Filters to deals present in deal_changes to address the
+documented activity-deal disconnect. One row per deal.
+{% enddocs %}
+
 ---
 
 ## Column Documentation
@@ -187,4 +203,49 @@ Email address associated with the user account.
 
 {% docs modified_at %}
 Timestamp indicating when the user account was modified.
+{% enddocs %}
+
+{% docs stage_reached_at %}
+Timestamp indicating when the deal first entered this stage.
+NULL if the deal never reached this stage.
+{% enddocs %}
+
+{% docs sales_call_1_completed_at %}
+Timestamp indicating when the deal's first 'meeting' activity was completed.
+Corresponds to funnel sub-step 2.1 (Sales Call 1).
+NULL if no meeting activity was completed for this deal.
+{% enddocs %}
+
+{% docs sales_call_2_completed_at %}
+Timestamp indicating when the deal's first 'sc_2' activity was completed.
+Corresponds to funnel sub-step 3.1 (Sales Call 2).
+NULL if no Sales Call 2 activity was completed for this deal.
+{% enddocs %}
+
+{% docs meeting_count %}
+Number of completed meeting activities for this deal.
+{% enddocs %}
+
+{% docs sc_2_count %}
+Number of completed Sales Call 2 activities for this deal.
+{% enddocs %}
+
+{% docs call_count %}
+Number of completed call activities for this deal.
+{% enddocs %}
+
+{% docs email_count %}
+Number of completed email activities for this deal.
+{% enddocs %}
+
+{% docs total_completed_activities %}
+Total number of completed activities across all types for this deal.
+{% enddocs %}
+
+{% docs first_activity_completed_at %}
+Timestamp of the first completed activity for this deal.
+{% enddocs %}
+
+{% docs last_activity_completed_at %}
+Timestamp of the last completed activity for this deal.
 {% enddocs %}

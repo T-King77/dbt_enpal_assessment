@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: int_deal_stage_reached
+    description: "{{ doc('int_deal_stage_reached') }}"
+    
+    columns:
+      - name: deal_id
+        description: "{{ doc('deal_id') }}"
+        tests:
+          - not_null
+          - unique
+      
+      - name: stage_1_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_2_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_3_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_4_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_5_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_6_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_7_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_8_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+      
+      - name: stage_9_reached_at
+        description: "{{ doc('stage_reached_at') }}"
+
+
+  - name: int_deal_activity_summary
+    description: "{{ doc('int_deal_activity_summary') }}"
+    
+    columns:
+      - name: deal_id
+        description: "{{ doc('deal_id') }}"
+        tests:
+          - not_null
+          - unique
+      
+      - name: sales_call_1_completed_at
+        description: "{{ doc('sales_call_1_completed_at') }}"
+      
+      - name: sales_call_2_completed_at
+        description: "{{ doc('sales_call_2_completed_at') }}"
+      
+      - name: meeting_count
+        description: Number of completed meeting activities for this deal
+      
+      - name: sc_2_count
+        description: Number of completed Sales Call 2 activities for this deal
+      
+      - name: call_count
+        description: Number of completed call activities for this deal
+      
+      - name: email_count
+        description: Number of completed email activities for this deal
+      
+      - name: total_completed_activities
+        description: Total number of completed activities for this deal
+      
+      - name: first_activity_completed_at
+        description: Timestamp of the first completed activity for this deal
+      
+      - name: last_activity_completed_at
+        description: Timestamp of the last completed activity for this deal
