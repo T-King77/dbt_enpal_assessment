@@ -93,20 +93,22 @@ for dropdown fields. Enables enrichment of deal outcomes such as
 lost_reason labels in downstream models.
 {% enddocs %}
 
-{% docs int_deal_stage_reached %}
-Pivots deal stage transitions into wide format with one timestamp column per stage.
-Captures the earliest timestamp each deal reached each of the 9 pipeline stages.
-One row per deal with stage_1_reached_at through stage_9_reached_at columns.
-NULL indicates stage not reached. Enables efficient downstream aggregation for
-funnel analysis.
+{% docs int_deal_milestones %}
+Captures deal lifecycle milestones including stage progression, creation
+timestamp, and outcome metadata. Pivots stage transitions to wide format
+with one timestamp column per stage (9 total), extracts deal creation time
+from add_time events, and captures latest lost_reason if deal was lost.
+One row per deal with all temporal milestones and outcomes.
 {% enddocs %}
 
-{% docs int_deal_activity_summary %}
-Aggregates activity engagement patterns per deal across all activity types.
-Captures first completed timestamps for Sales Call 1 and Sales Call 2 milestones
-(funnel sub-steps 2.1 and 3.1). Includes activity volume metrics for future
-engagement analysis. Filters to deals present in deal_changes to address the
-documented activity-deal disconnect. One row per deal.
+{% docs deals %}
+Complete deal entity combining stage progression, creation metadata, and outcome
+information. Serves as the foundational business entity for all deal-related
+analysis. One row per deal with all stage milestones, creation timestamps at
+multiple grains (day, week, month, quarter), and derived metrics. Enables
+funnel analysis at any time grain, win/loss analysis, sales cycle metrics,
+conversion rates, forecasting, and cohort analysis. This is the primary
+reusable entity designed to serve unlimited future analytical needs.
 {% enddocs %}
 
 ---
@@ -210,42 +212,55 @@ Timestamp indicating when the deal first entered this stage.
 NULL if the deal never reached this stage.
 {% enddocs %}
 
-{% docs sales_call_1_completed_at %}
-Timestamp indicating when the deal's first 'meeting' activity was completed.
-Corresponds to funnel sub-step 2.1 (Sales Call 1).
-NULL if no meeting activity was completed for this deal.
+{% docs created_at %}
+Timestamp when the deal was first created in Pipedrive.
+Derived from the earliest 'add_time' event in deal_changes.
 {% enddocs %}
 
-{% docs sales_call_2_completed_at %}
-Timestamp indicating when the deal's first 'sc_2' activity was completed.
-Corresponds to funnel sub-step 3.1 (Sales Call 2).
-NULL if no Sales Call 2 activity was completed for this deal.
+{% docs creation_date %}
+Date when the deal was created, truncated to day grain.
+Used for daily cohort analysis and aggregations.
 {% enddocs %}
 
-{% docs meeting_count %}
-Number of completed meeting activities for this deal.
+{% docs creation_week %}
+First day of the week when the deal was created.
+Used for weekly cohort analysis and aggregations.
 {% enddocs %}
 
-{% docs sc_2_count %}
-Number of completed Sales Call 2 activities for this deal.
+{% docs creation_month %}
+First day of the month when the deal was created.
+Used for monthly cohort analysis and grouping in funnel reports.
 {% enddocs %}
 
-{% docs call_count %}
-Number of completed call activities for this deal.
+{% docs creation_quarter %}
+First day of the quarter when the deal was created.
+Used for quarterly cohort analysis and aggregations.
 {% enddocs %}
 
-{% docs email_count %}
-Number of completed email activities for this deal.
+{% docs is_won %}
+Boolean flag indicating whether the deal reached the final stage (Renewal/Expansion).
+True if stage_9_reached_at is not null, false otherwise.
 {% enddocs %}
 
-{% docs total_completed_activities %}
-Total number of completed activities across all types for this deal.
+{% docs lost_reason_id %}
+ID of the reason why the deal was lost, if applicable.
+References the lost_reason field value options in the fields table.
+Null if the deal was not lost.
 {% enddocs %}
 
-{% docs first_activity_completed_at %}
-Timestamp of the first completed activity for this deal.
+{% docs lost_reason %}
+Human-readable label explaining why the deal was lost.
+Decoded from the fields metadata using lost_reason_id.
+Null if the deal was not lost.
 {% enddocs %}
 
-{% docs last_activity_completed_at %}
-Timestamp of the last completed activity for this deal.
+{% docs is_lost %}
+Boolean flag indicating whether the deal has a lost reason recorded.
+True if lost_reason_id is not null, false otherwise.
+Useful for filtering to closed-lost deals in win/loss analysis.
+{% enddocs %}
+
+{% docs sales_cycle_duration %}
+Time interval between deal creation and reaching the final stage.
+Null if the deal has not reached stage 9. Useful for velocity analysis.
 {% enddocs %}

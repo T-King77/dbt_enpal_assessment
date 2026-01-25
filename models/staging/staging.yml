@@ -88,7 +88,8 @@ models:
           - relationships:
               to: ref('stg_users')
               field: user_id
-              where: "assigned_to_user_id is not null"
+              config:
+                where: "assigned_to_user_id is not null"
 
       - name: deal_id
         description: "{{ doc('deal_id') }}"
