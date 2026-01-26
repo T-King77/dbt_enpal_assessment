@@ -580,7 +580,7 @@ Pre-aggregated models optimized for specific business questions.
   - **Purpose:** Required deliverable demonstrating one use case of the curated layer
 
 **Note on Assignment Specification:**
-The original specification included activity-based sub-steps (2.1 Sales Call 1, 3.1 Sales Call 2). Based on comprehensive data quality validation findings, these sub-steps will be excluded from the final deliverable. The 9 stage-based steps provide complete, trustworthy funnel analysis. See Section 2.3 for detailed validation findings and Section 3 for data quality summary.
+The original specification included activity-based sub-steps (2.1 Sales Call 1, 3.1 Sales Call 2). Based on comprehensive data quality validation findings, these sub-steps are included in the final report but return zero counts for all months due to unreliable activity-deal linkages. The 9 stage-based steps provide complete, trustworthy funnel progression data. See Section 2.3 for detailed validation findings and Section 3 for data quality summary.
 
 **Future Marts (Examples of What's Possible):**
 - `rep_sales_funnel_weekly` - Same funnel logic, weekly grain

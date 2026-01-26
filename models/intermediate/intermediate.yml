@@ -13,6 +13,8 @@ models:
       
       - name: created_at
         description: "{{ doc('created_at') }}"
+        tests:
+          - not_null
       
       - name: stage_1_reached_at
         description: "{{ doc('stage_reached_at') }}"

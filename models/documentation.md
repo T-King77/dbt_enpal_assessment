@@ -111,6 +111,14 @@ conversion rates, forecasting, and cohort analysis. This is the primary
 reusable entity designed to serve unlimited future analytical needs.
 {% enddocs %}
 
+{% docs rep_sales_funnel_monthly %}
+Monthly sales funnel report showing deal progression through 9 stage-based steps.
+Aggregates deals by creation month cohort and counts how many reached each funnel
+milestone. Uses a date spine to ensure all month × step combinations exist, preventing
+gaps in time-series visualizations. Activity-based sub-steps (2.1, 3.1) excluded due
+to documented data quality issues.
+{% enddocs %}
+
 ---
 
 ## Column Documentation
@@ -263,4 +271,21 @@ Useful for filtering to closed-lost deals in win/loss analysis.
 {% docs sales_cycle_duration %}
 Time interval between deal creation and reaching the final stage.
 Null if the deal has not reached stage 9. Useful for velocity analysis.
+{% enddocs %}
+
+{% docs month %}
+First day of the month when deals were created. Used for cohort analysis.
+{% enddocs %}
+
+{% docs kpi_name %}
+Human-readable funnel step name (e.g., "Lead Generation", "Qualified Lead").
+{% enddocs %}
+
+{% docs funnel_step %}
+Numeric funnel step identifier (1-9). Corresponds to pipeline stages.
+{% enddocs %}
+
+{% docs deals_count %}
+Number of deals from this creation month cohort that reached this funnel step.
+Includes zero counts to ensure complete time-series data.
 {% enddocs %}
