@@ -15,7 +15,7 @@ select
     count(*) as total_rows,
     count(distinct stage_id) AS distinct_stage_ids
 
-from stages;
+from public.stages;
 ```
 
 ### Field inspection
@@ -24,7 +24,7 @@ select
     stage_id, 
     stage_name
 
-from stages
+from public.stages
 order by stage_id;
 ```
 
@@ -43,7 +43,7 @@ select
     count(*) AS total_rows,
     count(distinct id) as distinct_type_ids
 
-from activity_types;
+from public.activity_types;
 ```
 
 ### Field inspection 
@@ -53,7 +53,7 @@ select
     type, 
     name
 
-from activity_types;
+from public.activity_types;
 ```
 
 **Insights:**  
@@ -73,14 +73,14 @@ select
     count(distinct activity_id) AS distinct_ids,
     count(distinct deal_id) AS distinct_deals
 
-from activity;
+from public.activity;
 
 ---
 select 
     deal_id,
     activity_id 
     
-from activity
+from public.activity
 group by 1,2
 having count(*) > 1;
 ```
@@ -96,7 +96,7 @@ select
     done, 
     count(*) 
 
-from activity
+from public.activity
 group by done;
 ```
 
@@ -114,7 +114,7 @@ select
     count(*) as total_rows,
     count(distinct deal_id) as distinct_deals
 
-from deal_changes;
+from public.deal_changes;
 ```
 
 **Insight:**  
@@ -126,7 +126,7 @@ from deal_changes;
 select 
     distinct changed_field_key
 
-from deal_changes;
+from public.deal_changes;
 ```
 
 **Insight:**  
@@ -140,7 +140,7 @@ from deal_changes;
 select 
     distinct new_value
 
-from deal_changes
+from public.deal_changes
 where changed_field_key = 'stage_id';
 ```
 
@@ -153,7 +153,7 @@ where changed_field_key = 'stage_id';
 select deal_id,
     min(change_time) filter (where changed_field_key = 'add_time') as created_at
 
-from deal_changes
+from public.deal_changes
 group by deal_id;
 ```
 
@@ -167,7 +167,7 @@ select
     new_value as stage_id,
     count(distinct deal_id) as deals_reached_stage
 
-from deal_changes
+from public.deal_changes
 where changed_field_key = 'stage_id'
 group by new_value
 order by stage_id;
@@ -179,27 +179,27 @@ order by stage_id;
 
 ### Lost reason timing pattern
 ```sql
-WITH won_deals_timeline AS (
-    SELECT 
+with won_deals_timeline as (
+    select 
         d.deal_id,
-        MIN(CASE WHEN d.changed_field_key = 'stage_id' AND d.new_value = '9' 
-            THEN d.change_time END) as stage_9_reached_at,
-        MIN(CASE WHEN d.changed_field_key = 'lost_reason' 
-            THEN d.change_time END) as lost_reason_set_at
-    FROM deal_changes d
-    GROUP BY d.deal_id
-    HAVING MIN(CASE WHEN d.changed_field_key = 'stage_id' AND d.new_value = '9' 
-               THEN d.change_time END) IS NOT NULL
-       AND MIN(CASE WHEN d.changed_field_key = 'lost_reason' 
-               THEN d.change_time END) IS NOT NULL
+        min(case when d.changed_field_key = 'stage_id' and d.new_value = '9' 
+            then d.change_time end) as stage_9_reached_at,
+        min(case when d.changed_field_key = 'lost_reason' 
+            then d.change_time end) as lost_reason_set_at
+    from public.deal_changes d
+    group by d.deal_id
+    having min(case when d.changed_field_key = 'stage_id' and d.new_value = '9' 
+               then d.change_time end) is not null
+       and min(case when d.changed_field_key = 'lost_reason' 
+               then d.change_time end) is not null
 )
-SELECT 
-    COUNT(*) as total_won_deals_with_lost_reason,
-    COUNT(CASE WHEN lost_reason_set_at > stage_9_reached_at THEN 1 END) as lost_reason_after_win,
-    MIN(lost_reason_set_at - stage_9_reached_at) as earliest_gap,
-    MAX(lost_reason_set_at - stage_9_reached_at) as latest_gap,
-    AVG(lost_reason_set_at - stage_9_reached_at) as avg_gap
-FROM won_deals_timeline;
+select 
+    count(*) as total_won_deals_with_lost_reason,
+    count(case when lost_reason_set_at > stage_9_reached_at then 1 end) as lost_reason_after_win,
+    min(lost_reason_set_at - stage_9_reached_at) as earliest_gap,
+    max(lost_reason_set_at - stage_9_reached_at) as latest_gap,
+    avg(lost_reason_set_at - stage_9_reached_at) as avg_gap
+from won_deals_timeline;
 ```
 
 **Insight:**
@@ -215,7 +215,7 @@ FROM won_deals_timeline;
 ### validate structure
 
 ```sql
-select * from fields;
+select * from public.fields;
 ```
 
 **Insight:**  
@@ -230,7 +230,7 @@ select
     value->>'id' as option_id,
     value->>'label' as option_label
 
-from fields f,
+from public.fields f,
      json_array_elements(f.field_value_options::json) as value
 where f.field_key in ('stage_id', 'lost_reason')
 order by f.field_key, option_id;
@@ -252,7 +252,7 @@ select
     count(*) as total_rows,
     count(distinct id) as distinct_ids
 
-from users;
+from public.users;
 ```
 
 **Insight:**  
@@ -265,7 +265,7 @@ select
     sum(case when coalesce(email,'') = '' then 1 else 0 end) as missing_emails,
     sum(case when coalesce(name,'') = '' then 1 else 0  end) as missing_names
 
-from users;
+from public.users;
 ```
 
 **Insight:**  
@@ -281,8 +281,8 @@ from users;
 select 
     distinct a.type
 
-from activity a
-left join activity_types t on a.type = t.type
+from public.activity a
+left join public.activity_types t on a.type = t.type
 where t.type is null;
 ```
 
@@ -297,8 +297,8 @@ where t.type is null;
 select
     count(*) as missing_users
 
-from activity a
-left join users u on a.assigned_to_user = u.id
+from public.activity a
+left join public.users u on a.assigned_to_user = u.id
 where u.id is null;
 ```
 
@@ -312,13 +312,13 @@ where u.id is null;
 ```sql
 select 
     count(*) as missing_deal_links
-from public_staging.stg_activity a
-left join public_staging.stg_deal_changes dc on a.deal_id = dc.deal_id
+from public.activity a
+left join public.deal_changes dc on a.deal_id = dc.deal_id
 where dc.deal_id is null;
 ```
 
 **Finding:**  
-The query returns **9,000+ rows**, indicating that a significant number of activity records reference deal_ids that do not exist in the deal_changes table.
+The query returns **4,000+ rows**, indicating that a significant number of activity records reference deal_ids that do not exist in the deal_changes table.
 
 ---
 
@@ -328,10 +328,10 @@ select
     count(distinct a.deal_id) as activity_deals,
     count(distinct dc.deal_id) as deals_also_in_changes,
     count(distinct case when dc.deal_id is null then a.deal_id end) as unmatched_deals
-from public_staging.stg_activity a
-left join public_staging.stg_deal_changes dc on a.deal_id = dc.deal_id
-where a.is_done = true
-  and a.activity_type_code in ('meeting', 'sc_2');
+from public.activity a
+left join public.deal_changes dc on a.deal_id = dc.deal_id
+where a.done = true
+  and a.type in ('meeting', 'sc_2');
 ```
 
 **Insight:**
@@ -346,15 +346,15 @@ where a.is_done = true
 **Query: Count deals with activities vs total deals**
 ```sql
 select 
-    (select count(distinct deal_id) from public_staging.stg_activity where is_done = true) as deals_with_activities,
-    (select count(distinct deal_id) from public_staging.stg_deal_changes) as deals_in_pipeline,
+    (select count(distinct deal_id) from public.activity where done = true) as deals_with_activities,
+    (select count(distinct deal_id) from public.deal_changes) as deals_in_pipeline,
     count(distinct d.deal_id) as matching_deals,
     round(100.0 * count(distinct d.deal_id) / 
-          (select count(distinct deal_id) from public_staging.stg_activity where is_done = true), 2) as match_rate_pct
-from public_staging.stg_deal_changes d
-inner join public_staging.stg_activity a 
+          (select count(distinct deal_id) from public.activity where done = true), 2) as match_rate_pct
+from public.deal_changes d
+inner join public.activity a 
     on d.deal_id = a.deal_id 
-    and a.is_done = true;
+    and a.done = true;
 ```
 
 **Result:**
@@ -371,14 +371,14 @@ inner join public_staging.stg_activity a
 select 
     a.deal_id,
     min(case when dc.changed_field_key = 'add_time' then dc.change_time end) as deal_created,
-    a.due_at as activity_date,
-    a.activity_type_code,
-    a.assigned_to_user_id as activity_owner
-from public_staging.stg_activity a
-inner join public_staging.stg_deal_changes dc on a.deal_id = dc.deal_id
+    a.due_to as activity_date,
+    a.type,
+    a.assigned_to_user as activity_owner
+from public.activity a
+inner join public.deal_changes dc on a.deal_id = dc.deal_id
 where a.deal_id in (206594, 264879, 278788, 640838, 672206, 984965)
-  and a.is_done = true
-group by a.deal_id, a.due_at, a.activity_type_code, a.assigned_to_user_id
+  and a.done = true
+group by a.deal_id, a.due_to, a.type, a.assigned_to_user
 order by a.deal_id;
 ```
 
@@ -394,12 +394,12 @@ order by a.deal_id;
 select 
     a.deal_id,
     max(case when dc.changed_field_key = 'user_id' then dc.new_value end) as deal_owner,
-    a.assigned_to_user_id as activity_owner
-from public_staging.stg_activity a
-inner join public_staging.stg_deal_changes dc on a.deal_id = dc.deal_id
+    a.assigned_to_user as activity_owner
+from public.activity a
+inner join public.deal_changes dc on a.deal_id = dc.deal_id
 where a.deal_id in (206594, 264879, 278788, 640838, 672206, 984965)
-  and a.is_done = true
-group by a.deal_id, a.assigned_to_user_id
+  and a.done = true
+group by a.deal_id, a.assigned_to_user
 order by a.deal_id;
 ```
 
@@ -416,17 +416,17 @@ select
     'deal_changes' as source,
     min(change_time) as earliest_date,
     max(change_time) as latest_date
-from public_staging.stg_deal_changes
+from public.deal_changes
 
 union all
 
 select 
     'activity' as source,
-    min(due_at) as earliest_date,
-    max(due_at) as latest_date
-from public_staging.stg_activity
-where is_done = true
-  and activity_type_code in ('meeting', 'sc_2');
+    min(due_to) as earliest_date,
+    max(due_to) as latest_date
+from public.activity
+where done = true
+  and type in ('meeting', 'sc_2');
 ```
 
 **Insight:**

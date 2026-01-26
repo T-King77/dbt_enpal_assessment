@@ -86,9 +86,6 @@ deal attribution:
 However, activities CANNOT be reliably joined to deals for conversion analysis, 
 funnel sub-steps, or attribution to deal outcomes.
 
-**Recommendations for Future Enhancement:**
-See recommendations section below for fixing this at the source system level.
-
 ---
 
 ### Lost Reason on Won Deals
