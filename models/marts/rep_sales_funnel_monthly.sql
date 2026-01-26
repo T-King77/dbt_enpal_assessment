@@ -46,7 +46,9 @@ with deals_base as (
 -- Get all unique months from deals
 months_spine as (
 
-    select distinct creation_month as month
+    select 
+        distinct creation_month as month
+    
     from deals_base
 
 ),
@@ -80,6 +82,7 @@ complete_spine as (
         steps.kpi_name
 
     from months_spine as months
+    
     cross join steps_spine as steps
 
 ),
@@ -91,6 +94,7 @@ step_counts as (
         creation_month as month,
         '1' as funnel_step,
         count(case when stage_1_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -100,6 +104,7 @@ step_counts as (
         creation_month as month,
         '2' as funnel_step,
         count(case when stage_2_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -109,6 +114,7 @@ step_counts as (
         creation_month as month,
         '3' as funnel_step,
         count(case when stage_3_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -118,6 +124,7 @@ step_counts as (
         creation_month as month,
         '4' as funnel_step,
         count(case when stage_4_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -127,6 +134,7 @@ step_counts as (
         creation_month as month,
         '5' as funnel_step,
         count(case when stage_5_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -136,6 +144,7 @@ step_counts as (
         creation_month as month,
         '6' as funnel_step,
         count(case when stage_6_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -145,6 +154,7 @@ step_counts as (
         creation_month as month,
         '7' as funnel_step,
         count(case when stage_7_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -154,6 +164,7 @@ step_counts as (
         creation_month as month,
         '8' as funnel_step,
         count(case when stage_8_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -163,6 +174,7 @@ step_counts as (
         creation_month as month,
         '9' as funnel_step,
         count(case when stage_9_reached_at is not null then 1 end) as deals_count
+    
     from deals_base
     group by creation_month
 
@@ -177,6 +189,7 @@ final as (
         coalesce(counts.deals_count, 0) as deals_count
     
     from complete_spine as spine
+
     left join step_counts as counts
         on spine.month = counts.month
         and spine.funnel_step = counts.funnel_step

@@ -22,8 +22,8 @@ The sales funnel consists of the following steps:
 8. Follow-up / Customer Success  
 9. Renewal / Expansion  
 
-Stage-based steps are derived from deal stage transitions.
-Sales call sub-steps are derived from completed CRM activities.
+Stage-based steps (1-9) are derived from deal stage transitions.
+Activity-based sub-steps (2.1, 3.1) are included but return zero counts due to data quality issues (see EDA for details).
 
 ---
 
@@ -50,7 +50,6 @@ The marts layer contains pre-aggregated, use-case-specific models
 optimized for reporting and BI consumption. Each mart demonstrates
 one application of the curated layer's capabilities.
 
----
 ---
 
 ## Model Documentation

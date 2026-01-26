@@ -489,7 +489,7 @@ Activities are likely logged in a lead management system while deals represent p
 - **Funnel modeling requires first occurrence per step** per deal (use MIN aggregation for timestamps)
 - **Deals may not reach all steps** → those steps will have NULL timestamps (expected funnel drop-off)
 - **Monthly aggregation** → group deals by creation month, then count deals that reached each step
-- **Activity-based sub-steps excluded** → Due to validated data quality issues (see Section 3), funnel contains 9 stage-based steps only. Activity data (Sales Call 1, Sales Call 2) not reliably linked to pipeline deals and has been excluded from modeling.
+- **Activity-based sub-steps included with zero counts** → Due to validated data quality issues (see Section 3), sub-steps 2.1 and 3.1 are included in the funnel report but return zero for all months. Activity data (Sales Call 1, Sales Call 2) cannot be reliably linked to pipeline deals. The 9 stage-based steps provide complete, trustworthy funnel progression data.
 
 ---
 
@@ -566,10 +566,12 @@ Pre-aggregated models optimized for specific business questions.
   - **Grain:** month × funnel_step
   - **Columns:** month, kpi_name, funnel_step, deals_count
   - **Content:** Monthly funnel progression across 9 stage-based steps
-  - **Funnel Steps:**
+    - **Funnel Steps:**
     1. Lead Generation (Stage 1)
     2. Qualified Lead (Stage 2)
+    2.1. Sales Call 1 (Activity - returns 0)
     3. Needs Assessment (Stage 3)
+    3.1. Sales Call 2 (Activity - returns 0)
     4. Proposal/Quote Preparation (Stage 4)
     5. Negotiation (Stage 5)
     6. Closing (Stage 6)
